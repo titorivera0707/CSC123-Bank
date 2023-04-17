@@ -29,8 +29,8 @@ public class MainBank {
 	
 
 	//Declare main menu and prompt to accept user input
-	public static final String[] menuOptions = { "Open Checking Account%n","Open Saving Account%n", "List Accounts%n","View Statement%n", "Deposit Funds%n", "Withdraw Funds%n",
-			"Close an Account%n", "Exit%n" };
+	public static final String[] menuOptions = { "Open Checking Account%n","Open Saving Account%n", "List Accounts%n","View Statement%n", "Account Information%n", "Deposit Funds%n", "Withdraw Funds%n",
+			"Foreign Exchange%n", "Close an Account%n", "Exit%n" };
 	public static final String MSG_PROMPT = "%nEnter choice: ";
 
 	
