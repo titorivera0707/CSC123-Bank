@@ -97,54 +97,70 @@ public class Account implements Serializable {
 	
 public ArrayList forexFileReader() throws IOException, InterruptedException {
 	
-	HttpRequest.Builder builder=HttpRequest.newBuilder();
-	builder.uri(URI.create("http://www.usman.cloud/banking/exchange-rate.csv"));
+	BufferedReader readFile = new BufferedReader(new FileReader("config.txt"));
+	String read;
+	String[] parser;
+	String httpURL = null;
+	ArrayList<String> newArr = new ArrayList<String>();
+	while((read = readFile.readLine()) != null) {
+		newArr.add(read);
+	}
+	
+	if(newArr.get(0).equals("support.currencies=false")) {
+		System.out.println("The file does not support currencies.");
+	}else if(newArr.get(0).equals("support.currencies=true")) {
+		parser = newArr.get(2).split(" ");
+		httpURL = parser[1];
+		
+		HttpRequest.Builder builder=HttpRequest.newBuilder();
+		builder.uri(URI.create(httpURL));
 
-	builder.method("GET", HttpRequest.BodyPublishers.noBody());
-	
-	//Step 2
-	HttpRequest req=builder.build();
-	
-	
+		builder.method("GET", HttpRequest.BodyPublishers.noBody());
 		
-	//Step 3
-	
-	HttpClient client=HttpClient.newHttpClient();
-					
-	//Step 4
-	
-	HttpResponse<String> response = 
+		//Step 2
+		HttpRequest req=builder.build();
+			
+		//Step 3
+		
+		HttpClient client=HttpClient.newHttpClient();
+						
+		//Step 4
+		
+		HttpResponse<String> response = 
 			client.send(req, HttpResponse.BodyHandlers.ofString());
-		String data = response.body();
-		String fullData = "";
-		String newFull = "";
-		String currency;
-		String forexConv;
-		String[] newSplit;
-		String[] initInfo;
+			String data = response.body();
+			String fullData = "";
+			String newFull = "";
+			String currency;
+			String forexConv;
+			String[] newSplit;
+			String[] initInfo;
+			
+			initInfo = data.split("\n");
+			
+			for(int i=0; i<initInfo.length; i++) {
+				newFull = newFull + initInfo[i] + ",";
+			}
+			
+			newSplit = newFull.split(",");
 		
-		initInfo = data.split("\n");
-		
-		for(int i=0; i<initInfo.length; i++) {
-			newFull = newFull + initInfo[i] + ",";
-		}
-		
-		newSplit = newFull.split(",");
-	
-		for(int x=0; x < (newSplit.length); x = x+3) {
-			currency = newSplit[x];
-			forexConv = newSplit[x+2];
-			forexPairs.add(currency);
-			forexPairs.add(forexConv);
-		}
+			for(int x=0; x < (newSplit.length); x = x+3) {
+				currency = newSplit[x];
+				forexConv = newSplit[x+2];
+				forexPairs.add(currency);
+				forexPairs.add(forexConv);
+			}
+	}
 		
 		return forexPairs;
 	}
 
 public String valVal(String forexValue) throws IOException, InterruptedException{
-	
+	if (forexFileReader().isEmpty()){
+		return "1";
+	}else {
 	return (String) forexFileReader().get((forexFileReader().indexOf(forexValue)+1));
-	
+	}
 }
 
 public String findForex(String newFor) {
