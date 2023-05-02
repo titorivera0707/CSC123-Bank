@@ -8,15 +8,18 @@ public class Transaction implements Serializable{
 	
 	public static final char CREDIT='C';
 	public static final char DEBIT='D';
+	public static String forex;
 	
 	int txnID;
 	double amount;
 	char type; //D|C
-	public Transaction(char type,double amount) {
+	public Transaction(char type,double amount, String forex) {
 		super();
 		this.amount = amount;
 		this.type = type;
+		this.forex = forex;
 		this.txnID=UniqueCounter.nextValue();
+		
 	}
 
 	public double getAmount() {
@@ -25,6 +28,10 @@ public class Transaction implements Serializable{
 	 
 	public char getType() {
 		return type;
+	}
+	
+	public String getForex() {
+		return forex;
 	}
 	
 	public String toString() {

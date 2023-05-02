@@ -25,6 +25,7 @@ public class Customer implements Serializable{
 	private String firstName;
 	private String lastName;
 	private String ssn;
+	private String forex;
 	
 	
 	/**********************************
@@ -36,10 +37,11 @@ public class Customer implements Serializable{
 	 **********************************/
 	
 
-	public Customer(String fName, String lName, String ssn) {
+	public Customer(String fName, String lName, String ssn, String forex) {
 		setFirstName(fName);
 		setLastName(lName);
 		setSSN(ssn);
+		setForex(forex);
 		
 	}
 	
@@ -77,6 +79,11 @@ public class Customer implements Serializable{
 		ssn=s;
 	}
 
+	public String setForex(String forex) {
+		this.forex = forex;
+		return forex;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -88,6 +95,10 @@ public class Customer implements Serializable{
 
 	public String getSSN() {
 		return ssn;
+	}
+	
+	public String getForex() {
+		return forex;
 	}
 	
 
@@ -103,7 +114,7 @@ public class Customer implements Serializable{
 	@Override
 	public String toString() {
 		
-		return firstName+" : "+lastName+" : "+ssn; 
+		return firstName+" : "+lastName+" : "+ssn + " : (" + forex +")"; 
 	}
 	
 	/**

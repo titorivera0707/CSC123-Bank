@@ -42,7 +42,7 @@ public class Bank {
 		
 	}
 	
-public static double getForExAmount(int accountNumber) throws NoSuchAccountException, FileNotFoundException{
+public static double getForExAmount(int accountNumber) throws NoSuchAccountException, NumberFormatException, IOException, InterruptedException{
 		
 		return lookup(accountNumber).getConv();
 		
@@ -77,7 +77,7 @@ public static double getForExAmount(int accountNumber) throws NoSuchAccountExcep
 		return lookup(accountNumber).getBalance();
 	}
 	
-	public static void getAccountInfo(int accountNumber) throws NoSuchAccountException, FileNotFoundException {
+	public static void getAccountInfo(int accountNumber) throws NoSuchAccountException, NumberFormatException, IOException, InterruptedException {
 		System.out.println("Account Number: " + accountNumber);
 		System.out.println("Name: "+ lookup(accountNumber).custName());
 		System.out.println("SSN: " + lookup(accountNumber).custSSN());
@@ -100,7 +100,7 @@ public static double getForExAmount(int accountNumber) throws NoSuchAccountExcep
 		out.flush();
 	}
 	
-public static void getForexFileReader() throws FileNotFoundException {
+public static void getForexFileReader() throws IOException, InterruptedException {
 	
 		newA.forexFileReader();
 	

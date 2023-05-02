@@ -2,6 +2,8 @@ package com.usman.csudh.bank;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.*;
+import java.io.*;
 
 import com.usman.csudh.bank.core.Account;
 import com.usman.csudh.bank.core.AccountClosedException;
@@ -20,12 +22,19 @@ public class MainBank {
 	public static final String MSG_FIRST_NAME = "Enter first name:  ";
 	public static final String MSG_LAST_NAME = "Enter last name:  ";
 	public static final String MSG_SSN = "Enter Social Security Number:  ";
+	public static final String MSG_FOREX = "What currency type would you like to use?(Will default to USD if currency type not found)";
 	public static final String MSG_ACCOUNT_NAME = "Enter account name:  ";
 	public static final String MSG_ACCOUNT_OD_LIMIT = "Enter overdraft limit:  ";
 	public static final String MSG_ACCOUNT_CREDIT_LIMIT = "Enter credit limit:  ";
 	public static final String MSG_AMOUNT = "Enter amount: ";
 	public static final String MSG_ACCOUNT_NUMBER = "Enter account number: ";
+	public static final String MSG_ACCOUNT_ACTION2 = "%nThe amount you are selling: %s%n%n";
+	public static final String MSG_ACCOUNT_ACTION3 = "%nThe amount you are buying: %s%n%n";
 	public static final String MSG_ACCOUNT_ACTION = "%n%s was %s, account balance is: %s%n%n";
+	public static final String MSG_CURRENCY_SELL = "\nThe currency you are selling: ";
+	public static final String MSG_CURRENCY_AMOUNT = "\nThe amount you are selling: %s%n";
+	public static final String MSG_CURRENCY_BUY = "\nThe currency you are buying: ";
+	
 	
 
 	//Declare main menu and prompt to accept user input
@@ -47,15 +56,16 @@ public class MainBank {
 	
 	
 	//Main method. 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, InterruptedException{
 
+		Bank.getForexFileReader();
 		new MainBank(System.in,System.out).run();
 
 	}
 	
 	
 	//The core of the program responsible for providing user experience.
-	public void run() {
+	public void run() throws NumberFormatException, InterruptedException {
 
 		Account acc;
 		int option = 0;
@@ -65,7 +75,8 @@ public class MainBank {
 
 			do {
 				option = ui.getMainOption(); //Render main menu
-
+				
+				
 				switch (option) {
 				case 1:
 					
@@ -73,7 +84,7 @@ public class MainBank {
 					//Compact statement to accept user input, open account, and print the result including the account number
 					ui.print(MSG_ACCOUNT_OPENED,
 							new Object[] { Bank.openCheckingAccount(ui.readToken(MSG_FIRST_NAME),
-									ui.readToken(MSG_LAST_NAME), ui.readToken(MSG_SSN),
+									ui.readToken(MSG_LAST_NAME), ui.readToken(MSG_SSN), ui.readToken(MSG_FOREX),
 									ui.readDouble(MSG_ACCOUNT_OD_LIMIT)).getAccountNumber() });
 					break;
 				case 2:
@@ -82,7 +93,7 @@ public class MainBank {
 					ui.print(MSG_ACCOUNT_OPENED,
 							new Object[] { Bank
 									.openSavingAccount(ui.readToken(MSG_FIRST_NAME),
-											ui.readToken(MSG_LAST_NAME), ui.readToken(MSG_SSN))
+											ui.readToken(MSG_LAST_NAME), ui.readToken(MSG_SSN),ui.readToken(MSG_FOREX))
 									.getAccountNumber() });
 					break;
 
@@ -105,8 +116,15 @@ public class MainBank {
 					break;
 
 				case 5:
-					//find account, deposit money and print result
+					//Shows account information for a certain account.
+					try {
+					int accountNumber=ui.readInt(MSG_ACCOUNT_NUMBER);
+					Bank.getAccountInfo(accountNumber);
+					} catch(Exception e) {}
+					break;
 					
+				case 6: 
+					//find account, deposit money and print result
 					try {
 						int accountNumber=ui.readInt(MSG_ACCOUNT_NUMBER);
 						Bank.makeDeposit(accountNumber, ui.readDouble(MSG_AMOUNT));
@@ -118,12 +136,12 @@ public class MainBank {
 					}
 					break;
 					
-				case 6:
+				case 7:
 					//find account, withdraw money and print result
 					try {
 						int accountNumber=ui.readInt(MSG_ACCOUNT_NUMBER);
 						Bank.makeWithdrawal(accountNumber, ui.readDouble(MSG_AMOUNT));
-						ui.print(MSG_ACCOUNT_ACTION, new Object[] {"Withdrawal","successful",Bank.getBalance(accountNumber)});
+						ui.print(MSG_ACCOUNT_ACTION, new Object[] {"Amount","selling",Bank.getBalance(accountNumber)});
 						
 					}
 					catch(NoSuchAccountException | InsufficientBalanceException e) {
@@ -132,10 +150,22 @@ public class MainBank {
 					}
 					break;
 
-				case 7:
+				case 8: 
+					//Converts currencies from USD to forex or vice versa.
+					try {
+						int accountNumber=ui.readInt(MSG_ACCOUNT_NUMBER);
+						Bank.currencyConv(accountNumber, ui.readToken(MSG_CURRENCY_SELL), ui.readToken(MSG_CURRENCY_BUY));
+						ui.print(MSG_ACCOUNT_ACTION3, new Object[] {String.format("%.2f", Bank.getForExAmount(accountNumber))});
+						
+					}
+					catch(NoSuchAccountException e) {
+						this.handleException(ui, e);
+
+					}
+					
+					break;
+				case 9:
 					//find account and close it
-					
-					
 					try {
 						int accountNumber=ui.readInt(MSG_ACCOUNT_NUMBER);
 						Bank.closeAccount(accountNumber);
