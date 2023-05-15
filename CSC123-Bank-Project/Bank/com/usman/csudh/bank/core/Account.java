@@ -95,13 +95,16 @@ public class Account implements Serializable {
 		transactions.add(new Transaction(Transaction.DEBIT,amount, forex));
 	}
 	
-public ArrayList forexFileReader() throws IOException, InterruptedException {
+public ArrayList forexFileReader() throws Exception {
 	
 	BufferedReader readFile = new BufferedReader(new FileReader("config.txt"));
 	String read;
+	String newRead = "";
 	String[] parser;
 	String httpURL = null;
 	ArrayList<String> newArr = new ArrayList<String>();
+	Abstract instance = null;
+	
 	while((read = readFile.readLine()) != null) {
 		newArr.add(read);
 	}
@@ -109,53 +112,89 @@ public ArrayList forexFileReader() throws IOException, InterruptedException {
 	if(newArr.get(0).equals("support.currencies=false")) {
 		System.out.println("The file does not support currencies.");
 	}else if(newArr.get(0).equals("support.currencies=true")) {
-		parser = newArr.get(2).split(" ");
-		httpURL = parser[1];
+		if(newArr.get(1).equals("currencies.source=file")) {
+			instance = Abstract.getInstance("file");
+		}else {
+			instance = Abstract.getInstance("webservice");
+		}
 		
-		HttpRequest.Builder builder=HttpRequest.newBuilder();
-		builder.uri(URI.create(httpURL));
-
-		builder.method("GET", HttpRequest.BodyPublishers.noBody());
+		String newInstance = instance.toString();
 		
-		//Step 2
-		HttpRequest req=builder.build();
-			
-		//Step 3
+		for(String line:instance.readCurrencies()) {
+			newRead = newRead + line + "\n";
+		}
 		
-		HttpClient client=HttpClient.newHttpClient();
-						
-		//Step 4
+		String data = newRead;
+		String fullData = "";
+		String newFull = "";
+		String currency;
+		String forexConv;
+		String[] newSplit;
+		String[] initInfo;
 		
-		HttpResponse<String> response = 
-			client.send(req, HttpResponse.BodyHandlers.ofString());
-			String data = response.body();
-			String fullData = "";
-			String newFull = "";
-			String currency;
-			String forexConv;
-			String[] newSplit;
-			String[] initInfo;
-			
-			initInfo = data.split("\n");
-			
-			for(int i=0; i<initInfo.length; i++) {
-				newFull = newFull + initInfo[i] + ",";
-			}
-			
-			newSplit = newFull.split(",");
+		initInfo = data.split("\n");
 		
-			for(int x=0; x < (newSplit.length); x = x+3) {
-				currency = newSplit[x];
-				forexConv = newSplit[x+2];
-				forexPairs.add(currency);
-				forexPairs.add(forexConv);
-			}
+		for(int i=0; i<initInfo.length; i++) {
+			newFull = newFull + initInfo[i] + ",";
+		}
+		
+		newSplit = newFull.split(",");
+	
+		for(int x=0; x < (newSplit.length); x = x+3) {
+			currency = newSplit[x];
+			forexConv = newSplit[x+2];
+			forexPairs.add(currency);
+			forexPairs.add(forexConv);
+		}
+		
+//		parser = newArr.get(2).split(" ");
+//		httpURL = parser[1];
+//		
+//		HttpRequest.Builder builder=HttpRequest.newBuilder();
+//		builder.uri(URI.create("http://www.usman.cloud/banking/exchange-rate.csv"));
+//
+//		builder.method("GET", HttpRequest.BodyPublishers.noBody());
+//		
+//		//Step 2
+//		HttpRequest req=builder.build();
+//			
+//		//Step 3
+//		
+//		HttpClient client=HttpClient.newHttpClient();
+//						
+//		//Step 4
+//		
+//		HttpResponse<String> response = 
+//			client.send(req, HttpResponse.BodyHandlers.ofString());
+//			String data = response.body();
+//			String fullData = "";
+//			String newFull = "";
+//			String currency;
+//			String forexConv;
+//			String[] newSplit;
+//			String[] initInfo;
+//			
+//			initInfo = data.split("\n");
+//			
+//			for(int i=0; i<initInfo.length; i++) {
+//				newFull = newFull + initInfo[i] + ",";
+//			}
+//			
+//			newSplit = newFull.split(",");
+//		
+//			for(int x=0; x < (newSplit.length); x = x+3) {
+//				currency = newSplit[x];
+//				forexConv = newSplit[x+2];
+//				forexPairs.add(currency);
+//				forexPairs.add(forexConv);
+//			}
+//	}
+//		
 	}
-		
-		return forexPairs;
-	}
+	return forexPairs;
+}
 
-public String valVal(String forexValue) throws IOException, InterruptedException{
+public String valVal(String forexValue) throws Exception{
 	if (forexFileReader().isEmpty()){
 		return "1";
 	}else {
@@ -172,7 +211,7 @@ public String findForex(String newFor) {
 	
 }
 
-public double getConv() throws NumberFormatException, IOException, InterruptedException{		
+public double getConv() throws Exception{		
 	double forexBalance = 0;
 	double workingBalance=0;
 	
@@ -219,6 +258,9 @@ public double getConv() throws NumberFormatException, IOException, InterruptedEx
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

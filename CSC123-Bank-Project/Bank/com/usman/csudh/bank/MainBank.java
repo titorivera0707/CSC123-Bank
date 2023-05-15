@@ -56,7 +56,7 @@ public class MainBank {
 	
 	
 	//Main method. 
-	public static void main(String[] args) throws IOException, InterruptedException{
+	public static void main(String[] args) throws Exception{
 
 		Bank.getForexFileReader();
 		new MainBank(System.in,System.out).run();
@@ -65,7 +65,7 @@ public class MainBank {
 	
 	
 	//The core of the program responsible for providing user experience.
-	public void run() throws NumberFormatException, InterruptedException {
+	public void run() throws Exception {
 
 		Account acc;
 		int option = 0;
