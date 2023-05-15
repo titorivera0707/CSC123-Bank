@@ -4,42 +4,32 @@ import java.util.*;
 
 public abstract class Abstract {
 	
-	public static String newString;
-	
 	public static Abstract getInstance(String type) throws Exception{
 		if(type.equalsIgnoreCase("file")) {
-			newString = new HooksFile().toString();
 			return new HooksFile();
 		}
 		else if(type.equalsIgnoreCase("webservice")) {
-			newString = new HooksFile().toString();
 			return new HooksHTTP();
 		}
 		else {
-			throw new Exception("Type "+type+ " not understood!");
+			throw new Exception("Type "+type+ " not accepted");
 		}
 	}
 	
 	protected abstract InputStream getInputStream() throws Exception; 
 	
 	public ArrayList<String> readCurrencies() throws Exception{
-		//get an input steam
-		InputStream in=getInputStream();
-		//Create stream readers / buffered reader
-		BufferedReader br=new BufferedReader(new InputStreamReader(in));
+		InputStream inStream=getInputStream();
+		BufferedReader buffRead=new BufferedReader(new InputStreamReader(inStream));
+		ArrayList<String> arrList=new ArrayList<String>();
 		
-		ArrayList<String> list=new ArrayList<String>();
-		
-		String line=null;
+		String newLine=null;
 		//read lines 
-		while((line=br.readLine())!=null) {
-			//add lines to arraylist
-			list.add(line);
+		while((newLine=buffRead.readLine())!=null) {
+			arrList.add(newLine);
 		}
 		
-		//return array list 
-		
-		return list;
+		return arrList;
 		
 	}
 
